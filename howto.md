@@ -1,6 +1,6 @@
 1. Клонировали репозиторий KotlinAsFirst2020
 2. Указали ему в качестве апстрима upstream-my свой форк KotlinAsFirst2021 (git remote add upstream-my https://github.com/LeeryLis/KotlinAsFirst2021.git)
-3. Создали ветку backport (git checkout -b backport) и перенесли в неё свои коммиты с решениями из 2021 года (git merge upstream-my)
+3. Создали ветку backport (git checkout -b backport) и перенесли в неё свои коммиты с решениями из 2021 года (git pull upstream-my)
 4. Указали второй апстрим upstream-theirs форка KotlinAsFirst2021 (git remote add upstream-theirs https://github.com/RolandTheSoldier/KotlinAsFirst2021)
 5. Смёрджили решения в ветку master
 6. Создали в корне проекта файл remotes, куда поместили вывод git remote -v
