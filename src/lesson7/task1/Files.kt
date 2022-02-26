@@ -1,10 +1,12 @@
-@file:Suppress("UNUSED_PARAMETER", "ConvertCallChainIntoSequence")
-
 package lesson7.task1
 
+import lesson5.task1.containsIn
+import ru.spbstu.wheels.currentPlatform
+import kotlin.math.*
 import java.io.File
 import kotlin.math.min
 import kotlin.math.pow
+
 
 // Урок 7: работа с файлами
 // Урок интегральный, поэтому его задачи имеют сильно увеличенную стоимость
@@ -65,7 +67,13 @@ fun alignFile(inputName: String, lineLength: Int, outputName: String) {
  * Подчёркивание в середине и/или в конце строк значения не имеет.
  */
 fun deleteMarked(inputName: String, outputName: String) {
-    TODO()
+    val writer = File(outputName).bufferedWriter()
+    for (line in File(inputName).readLines()) {
+        if (line.startsWith("_")) continue
+        writer.write(line)
+        writer.newLine()
+    }
+    writer.close()
 }
 
 /**
@@ -77,8 +85,32 @@ fun deleteMarked(inputName: String, outputName: String) {
  * Регистр букв игнорировать, то есть буквы е и Е считать одинаковыми.
  *
  */
-fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> = TODO()
+fun countSubstrings(inputName: String, substrings: List<String>): Map<String, Int> {
+    val listSubToSet = substrings.toSet()
+    val map = mutableMapOf<String, Int>()
+    for (line in listSubToSet) {
+        map[line] = 0
+    }
 
+    val reader = File(inputName).readLines()
+    for (line in reader) {
+        for (phrase in listSubToSet) {
+            val str = line.lowercase()
+            val phrase2 = phrase.lowercase()
+
+            var index = 0
+            var num = str.indexOf(phrase2, index)
+
+            while (num != -1) {
+                map[phrase] = map[phrase]!! + 1
+                index = num + 1
+                num = str.indexOf(phrase2, index)
+            }
+        }
+    }
+
+    return map
+}
 
 /**
  * Средняя (12 баллов)
@@ -94,7 +126,38 @@ fun countSubstrings(inputName: String, substrings: List<String>): Map<String, In
  *
  */
 fun sibilants(inputName: String, outputName: String) {
-    TODO()
+    val writer = File(outputName).bufferedWriter()
+    val list = (File(inputName).readLines()).toMutableList()
+    if (list.size == 1 && list[0] == "") {
+        writer.write("")
+        writer.close()
+        return
+    }
+
+    val regex = Regex(
+        """[а-я]*[жчшщ][ыяю][а-я]*|жю(?!ри)|(?<!бро)шю(?!р)|(?<!пара)шю(?!т)""",
+        RegexOption.IGNORE_CASE
+    )
+    val reg1 = Regex("""(?<=[жчшщ])ы""", RegexOption.IGNORE_CASE)   //   и
+    val reg2 = Regex("""(?<=[жчшщ])я""", RegexOption.IGNORE_CASE)   //   а
+    val reg3 = Regex("""(?<=[жчшщ])ю""", RegexOption.IGNORE_CASE)   //   у
+
+    for (str in list) {
+        val line = Regex(""" """).split(str).toMutableList()
+        for ((index, word) in line.withIndex()) {
+            if (regex.containsMatchIn(word)) {
+                when {
+                    reg1.containsMatchIn(word) -> reg1.replace(word, "и")
+                    reg2.containsMatchIn(word) -> reg2.replace(word, "а")
+                    reg3.containsMatchIn(word) -> reg3.replace(word, "у")
+                }
+                line[index] = word
+            }
+        }
+        writer.write(line.joinToString(separator = " "))
+        writer.newLine()
+    }
+    writer.close()
 }
 
 /**
@@ -115,7 +178,25 @@ fun sibilants(inputName: String, outputName: String) {
  *
  */
 fun centerFile(inputName: String, outputName: String) {
-    TODO()
+    val writer = File(outputName).bufferedWriter()
+
+    var maximum = 0
+    for (str in File(inputName).readLines()) {
+        if (str.trim().length > maximum)
+            maximum = str.trim().length
+    }
+
+    for (str in File(inputName).readLines()) {
+        var space = (maximum - str.trim().length) / 2
+        while (space > 0) {
+            writer.write(" ")
+            space -= 1
+        }
+        writer.write(str.trim())
+        writer.newLine()
+    }
+
+    writer.close()
 }
 
 /**
@@ -146,7 +227,84 @@ fun centerFile(inputName: String, outputName: String) {
  * 8) Если входной файл удовлетворяет требованиям 1-7, то он должен быть в точности идентичен выходному файлу
  */
 fun alignFileByWidth(inputName: String, outputName: String) {
-    TODO()
+    val writer = File(outputName).bufferedWriter()
+    try {
+        val listDivided = mutableListOf<MutableList<String>>()
+        val listIn = (File(inputName).readLines()).toMutableList()
+
+        for (i in 0 until listIn.size) {
+            if (listIn[i] != listIn[i].trim()) break
+            if (i == listIn.size - 1) {
+                for (j in 0 until listIn.size) {
+                    writer.write(listIn[j])
+                    if (j == listIn.size - 1) {
+                        writer.close()
+                        return
+                    }
+                    writer.newLine()
+                }
+            }
+        }
+
+        val listOfLengths = mutableListOf<Int>()
+        var maxLength = 0
+        var indexOfMaxString = 0
+        var strNoSpace: Int
+
+        for (str in listIn) {
+            strNoSpace = str.replace(Regex("""\s+"""), "").length
+            if (strNoSpace > maxLength) {
+                maxLength = strNoSpace
+                indexOfMaxString = listDivided.size
+            }
+            if (strNoSpace == 0) listDivided.add(mutableListOf(""))
+            else listDivided.add(str.split(Regex("""\s+""")).toMutableList())
+            listOfLengths.add(strNoSpace)
+        }
+
+        for (list in listDivided) {
+            list.removeAt(0)
+        }
+
+        maxLength += listDivided[indexOfMaxString].size - 1
+        var index = -1
+
+        for (list in listDivided) {
+            ++index
+            if (listOfLengths[index] == 0) {
+                writer.newLine()
+                continue
+            }
+            if (list.size == 1) {
+                writer.write(list[0])
+                writer.newLine()
+                continue
+            }
+
+            val spaceSize = (maxLength - listOfLengths[index]) / (list.size - 1)
+            var remainderOfSpace = (maxLength - listOfLengths[index]) % (list.size - 1)
+            var countSpaces = 0
+
+            for (word in list) {
+                writer.write(word)
+                ++countSpaces
+                if (countSpaces == list.size) break
+                for (time in 1..spaceSize)
+                    writer.write(" ")
+                if (remainderOfSpace > 0) {
+                    writer.write(" ")
+                    --remainderOfSpace
+                }
+            }
+            writer.newLine()
+        }
+    } catch (e: java.lang.IndexOutOfBoundsException) {
+        writer.write("")
+    } catch (e: NullPointerException) {
+        writer.write("")
+    } finally {
+        writer.close()
+    }
 }
 
 /**
@@ -529,7 +687,6 @@ fun markdownToHtml(inputName: String, outputName: String) {
 fun printMultiplicationProcess(lhv: Int, rhv: Int, outputName: String) {
     TODO()
 }
-
 
 /**
  * Сложная (25 баллов)

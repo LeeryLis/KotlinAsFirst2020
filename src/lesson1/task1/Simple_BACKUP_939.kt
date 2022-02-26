@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_PARAMETER")
+
 package lesson1.task1
 
 import kotlin.math.*
@@ -68,7 +70,13 @@ println("Root product: $x1x2")
  * Пользователь задает время в часах, минутах и секундах, например, 8:20:35.
  * Рассчитать время в секундах, прошедшее с начала суток (30035 в данном случае).
  */
+<<<<<<< HEAD
 fun seconds(hours: Int, minutes: Int, seconds: Int): Int = hours * 60 * 60 + minutes * 60 + seconds
+=======
+fun seconds(hours: Int, minutes: Int, seconds: Int): Int =
+    seconds + (minutes * 60) + (hours * 3600)
+
+>>>>>>> 797b6cd46dcee1e98695fa822489cb8cb8935924
 
 /**
  * Тривиальная (1 балл)
@@ -78,8 +86,12 @@ fun seconds(hours: Int, minutes: Int, seconds: Int): Int = hours * 60 * 60 + min
  * 1 сажень = 3 аршина = 48 вершков, 1 вершок = 4.445 см.
  */
 fun lengthInMeters(sagenes: Int, arshins: Int, vershoks: Int): Double =
+<<<<<<< HEAD
     (sagenes * 48 + arshins * 16 + vershoks) * 4.445 / 100.0
+=======
+    vershoks * 0.04445 + arshins * 0.04445 * 16 + sagenes * 0.04445 * 48
 
+>>>>>>> 797b6cd46dcee1e98695fa822489cb8cb8935924
 
 /**
  * Тривиальная (1 балл)
@@ -119,7 +131,10 @@ fun thirdDigit(number: Int): Int = (number % 1000) / 100
  */
 fun travelMinutes(hoursDepart: Int, minutesDepart: Int, hoursArrive: Int, minutesArrive: Int): Int =
     (hoursArrive * 60 + minutesArrive) - (hoursDepart * 60 + minutesDepart)
+<<<<<<< HEAD
+=======
 
+>>>>>>> 797b6cd46dcee1e98695fa822489cb8cb8935924
 
 /**
  * Простая (2 балла)

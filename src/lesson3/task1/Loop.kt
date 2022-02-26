@@ -1,8 +1,6 @@
-@file:Suppress("UNUSED_PARAMETER")
-
 package lesson3.task1
 
-//import kotlin.math.sqrt
+import com.sun.jdi.LongValue
 import kotlin.math.*
 
 // Урок 3: циклы
@@ -73,7 +71,10 @@ fun digitCountInNumber(n: Int, m: Int): Int =
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun digitNumber(n: Int): Int = TODO()
+fun digitNumber(n: Int): Int = when {
+    n / 10 == 0 -> 1
+    else -> digitNumber(n / 10) + 1
+}
 
 /**
  * Простая (2 балла)
@@ -81,21 +82,47 @@ fun digitNumber(n: Int): Int = TODO()
  * Найти число Фибоначчи из ряда 1, 1, 2, 3, 5, 8, 13, 21, ... с номером n.
  * Ряд Фибоначчи определён следующим образом: fib(1) = 1, fib(2) = 1, fib(n+2) = fib(n) + fib(n+1)
  */
-fun fib(n: Int): Int = TODO()
+fun fib(n: Int): Int {
+    if (n in 1..2) return 1
+
+    var sum = 0
+    var previous = 1
+    var current = 1
+
+    for (i in 3..n) {
+        sum = previous + current
+        previous = current
+        current = sum
+    }
+    return sum
+}
 
 /**
  * Простая (2 балла)
  *
  * Для заданного числа n > 1 найти минимальный делитель, превышающий 1
  */
-fun minDivisor(n: Int): Int = TODO()
+fun minDivisor(n: Int): Int {
+    for (i in 2..sqrt(n.toDouble()).toInt()) {
+        if (n % i == 0) return i
+    }
+    return n
+}
 
 /**
  * Простая (2 балла)
  *
  * Для заданного числа n > 1 найти максимальный делитель, меньший n
  */
-fun maxDivisor(n: Int): Int = TODO()
+fun maxDivisor(n: Int): Int {
+    if (n == 2) return 1
+    if (n % 2 == 0) return n / 2
+    val sqrtNPlusOne = sqrt(n.toDouble()).toInt() + 1
+    for (i in 3..sqrtNPlusOne step 2) {
+        if (n % i == 0) return n / i
+    }
+    return 1
+}
 
 /**
  * Простая (2 балла)
@@ -113,7 +140,31 @@ fun maxDivisor(n: Int): Int = TODO()
  * Написать функцию, которая находит, сколько шагов требуется для
  * этого для какого-либо начального X > 0.
  */
-fun collatzSteps(x: Int): Int = TODO()
+fun collatzSteps(x: Int): Int {
+    var count = 0
+    var n = x
+    while (n != 1) {
+        if (n % 2 == 0) {
+            n /= 2
+            ++count
+        } else {
+            n = 3 * n + 1
+            ++count
+        }
+    }
+    return count
+}
+
+/** Наибольший общий делитель **/
+fun gcd(x1: Int, x2: Int): Int {
+    var a = x1
+    var b = x2
+    while (a != 0 && b != 0) {
+        if (a > b) a %= b
+        else b %= a
+    }
+    return a + b
+}
 
 /**
  * Средняя (3 балла)
@@ -121,7 +172,11 @@ fun collatzSteps(x: Int): Int = TODO()
  * Для заданных чисел m и n найти наименьшее общее кратное, то есть,
  * минимальное число k, которое делится и на m и на n без остатка
  */
-fun lcm(m: Int, n: Int): Int = TODO()
+fun lcm(m: Int, n: Int): Int {
+    if (m == n) return m
+    if (m == 1 || n == 1) return max(m, n)
+    return n * m / gcd(m, n)
+}
 
 /**
  * Средняя (3 балла)
@@ -130,7 +185,7 @@ fun lcm(m: Int, n: Int): Int = TODO()
  * Взаимно простые числа не имеют общих делителей, кроме 1.
  * Например, 25 и 49 взаимно простые, а 6 и 8 -- нет.
  */
-fun isCoPrime(m: Int, n: Int): Boolean = TODO()
+fun isCoPrime(m: Int, n: Int): Boolean = gcd(m, n) == 1
 
 /**
  * Средняя (3 балла)
@@ -139,7 +194,17 @@ fun isCoPrime(m: Int, n: Int): Boolean = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun revert(n: Int): Int = TODO()
+fun revert(n: Int): Int {
+    if (n / 10 == 0) return n
+    var rev = 0
+    val dn = digitNumber(n)
+    val ten = 10.0
+    for (i in 1..dn) {
+        rev += (n / (ten.pow(dn - i.toDouble())).toInt() % 10) *
+                (ten.pow(i.toDouble() - 1.0)).toInt()
+    }
+    return rev
+}
 
 /**
  * Средняя (3 балла)
@@ -150,7 +215,7 @@ fun revert(n: Int): Int = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun isPalindrome(n: Int): Boolean = TODO()
+fun isPalindrome(n: Int): Boolean = n == revert(n)
 
 /**
  * Средняя (3 балла)
@@ -160,7 +225,14 @@ fun isPalindrome(n: Int): Boolean = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun hasDifferentDigits(n: Int): Boolean = TODO()
+fun hasDifferentDigits(n: Int): Boolean {
+    var num = n
+    for (i in 1 until digitNumber(n)) {
+        if (num % 100 / 10 == num % 10) num /= 10
+        else return true
+    }
+    return n % 10 != num
+}
 
 /**
  * Средняя (4 балла)
@@ -218,37 +290,16 @@ fun squareSequenceDigit(n: Int): Int {
  * Использовать операции со строками в этой задаче запрещается.
  */
 fun fibSequenceDigit(n: Int): Int {
-    when (n) {
-        1 -> return 1
-        2 -> return 1
+    val ten = 10.0
+    var curFib = 1
+    var countFib = 1
+    var num = 0
+
+    while (num < n) {
+        curFib = fib(countFib)
+        num += digitNumber(curFib)
+        ++countFib
     }
 
-    var k = 2
-    var lastN = 0
-
-    var n1 = 1
-    var n2 = 1
-
-    for (i in 1..n) {
-        lastN = n1 + n2
-
-        k += findLen(lastN)
-        n1 = n2
-        n2 = lastN
-
-        if (k >= n) break
-    }
-    val helpDivNumb = 10.0.pow(k - n).toInt()
-    return lastN / helpDivNumb % 10
-}
-
-fun findLen(n: Int): Int {
-    var resN = n
-    var len = 0
-    while (resN >= 1) {
-        len++
-        resN /= 10
-    }
-
-    return len
+    return curFib / ten.pow((num - n).toDouble()).toInt() % 10
 }
