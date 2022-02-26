@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_PARAMETER", "ConvertCallChainIntoSequence")
+
 package lesson7.task1
 
 import lesson5.task1.containsIn

@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_PARAMETER")
+
 package lesson3.task1
 
 import com.sun.jdi.LongValue

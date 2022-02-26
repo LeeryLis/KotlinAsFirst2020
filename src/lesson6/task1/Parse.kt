@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_PARAMETER", "ConvertCallChainIntoSequence")
+
 package lesson6.task1
 
 import java.lang.Exception
